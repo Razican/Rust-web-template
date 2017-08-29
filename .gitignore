@@ -1,0 +1,16 @@
+/target/
+**/*.rs.bk
+.env
+.sass-cache
+
+static/css/_compiled/*
+!static/css/_compiled/.gitkeep
+
+static/css/_map/*
+!static/css/_map/.gitkeep
+
+static/js/_compiled/*
+!static/js/_compiled/.gitkeep
+
+static/js/_map/*
+!static/js/_map/.gitkeep
