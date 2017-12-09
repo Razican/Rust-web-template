@@ -4,6 +4,8 @@
 
 **Note:** *Requires latest Rust nightly so that Rocket works properly.*
 
+**Note 2:** *Requires [SASS][sass] and [UglifyJS 3][uglify-js] to be installed to work.*
+
 This code is meant to be used as a template for creating web applications in Rust. It includes  the
 following:
 
@@ -24,8 +26,10 @@ many of these features are still missing.
 
 Extensive documentation can be found through the code, but it's still work in progress. I expect to
 improve it adding a complete guide on how to configure the website from the beginning.
-
 ## License
 
 This code is distributed under the terms of both the MIT license and the Apache License (Version
 2.0), at your option. See LICENSE-APACHE, and LICENSE-MIT files for details.
+
+[sass]: http://sass-lang.com/install
+[uglify-js]: https://github.com/mishoo/UglifyJS2#install
