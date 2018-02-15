@@ -1,9 +1,10 @@
 //! OAuth related database methods.
 
-use error::*;
+use failure::Error;
+
 use super::models::oauth::Application;
 use super::Connection;
 
-pub fn get_application(db_con: &Connection, app_id: u64) -> Result<Option<Application>> {
+pub fn get_application(db_con: &Connection, app_id: u64) -> Result<Option<Application>, Error> {
     unimplemented!()
 }

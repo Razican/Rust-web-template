@@ -1,5 +1,6 @@
 //! OAuth module.
 
+use failure::Error;
 use chrono::{DateTime, Duration, NaiveDateTime, Utc};
 use rocket_contrib::Json;
 use rocket::Outcome;
@@ -7,7 +8,6 @@ use rocket::request::{self, FromRequest, Request};
 use rocket::http::Status;
 use uuid::Uuid;
 
-use error::*;
 use compress::CompressedJson;
 use db::{self, CONNECTION_POOL};
 
@@ -130,7 +130,7 @@ impl<'a, 'r> FromRequest<'a, 'r> for Application {
 pub fn refresh_token(
     application: Application,
     credentials: Json<RefreshCredentials>,
-) -> Result<CompressedJson<RefreshResponse>> {
+) -> Result<CompressedJson<RefreshResponse>, Error> {
     unimplemented!()
 }
 
@@ -143,6 +143,6 @@ pub struct AccessToken {
 
 /// Get access token.
 #[get("/access_token")]
-pub fn access_token() -> Result<CompressedJson<AccessToken>> {
+pub fn access_token() -> Result<CompressedJson<AccessToken>, Error> {
     unimplemented!()
 }

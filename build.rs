@@ -1,13 +1,13 @@
 //! Build script.
 
 #[macro_use]
-extern crate error_chain;
+extern crate failure;
 
 use std::process::Command;
 use std::fs::{create_dir_all, read_dir, rename};
 use std::path::{Path, PathBuf};
 
-use error::*;
+use failure::Error;
 
 fn main() {
     // Minify CSS:
@@ -18,7 +18,7 @@ fn main() {
 }
 
 /// Minifies a SCSS folder.
-fn minify_css<P: AsRef<Path>>(folder_path: P) -> Result<()> {
+fn minify_css<P: AsRef<Path>>(folder_path: P) -> Result<(), Error> {
     for file in read_dir(&folder_path)? {
         let file = file?;
         let path = file.path();
@@ -85,7 +85,7 @@ fn minify_css<P: AsRef<Path>>(folder_path: P) -> Result<()> {
 }
 
 /// Minifies a JavaScript folder.
-fn minify_js<P: AsRef<Path>>(folder_path: P) -> Result<()> {
+fn minify_js<P: AsRef<Path>>(folder_path: P) -> Result<(), Error> {
     for file in read_dir(&folder_path)? {
         let file = file?;
         let path = file.path();
@@ -145,16 +145,4 @@ fn minify_js<P: AsRef<Path>>(folder_path: P) -> Result<()> {
         }
     }
     Ok(())
-}
-
-/// Error module.
-#[allow(unused_doc_comment)]
-mod error {
-    error_chain!{
-        foreign_links {
-            Io(::std::io::Error);
-            StripPrefix(::std::path::StripPrefixError);
-            FromUtf8(::std::string::FromUtf8Error);
-        }
-    }
 }

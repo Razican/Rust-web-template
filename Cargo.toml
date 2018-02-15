@@ -16,19 +16,19 @@ source_maps = []
 
 [dependencies]
 lazy_static = "1.0.0"
-error-chain = "0.11.0"
+failure = "0.1.1"
 rocket = "0.3.6"
 rocket_codegen = "0.3.6"
 dotenv = "0.10.1"
 serde = "1.0.27"
 serde_derive = "1.0.27"
-serde_json = "1.0.7"
+serde_json = "1.0.9"
 redis = "0.8.0"
-r2d2 = "0.8.1"
+r2d2 = "0.8.2"
 r2d2_redis = "0.7.0"
 r2d2-diesel = "1.0.0"
 chrono = "0.4.0"
-uuid = "0.5.1"
+uuid = "0.6.0-beta"
 
 [dependencies.rocket_contrib]
 version = "0.3.6"
@@ -41,17 +41,17 @@ features = ["rust_backend"]
 default-features = false
 
 [dependencies.diesel]
-version = "1.0.0"
+version = "1.1.0"
 default-features = false
 features = ["postgres", "uuid", "chrono"]
 
 [dependencies.diesel_infer_schema]
-version = "1.0.0"
+version = "1.1.0"
 default-features = false
 features = ["postgres"]
 
 [build-dependencies]
-error-chain = "0.11.0"
+failure = "0.1.1"
 
 # The development profile, used for `cargo build`.
 [profile.dev]

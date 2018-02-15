@@ -29,7 +29,6 @@ lazy_static!{
 
 /// Database schema.
 #[allow(missing_docs, unused_qualifications, unused_import_braces)]
-// #[recursion_limit = "1024"]
 mod schema {
-    infer_schema!("dotenv:DATABASE_URL");
+    //infer_schema!("dotenv:DATABASE_URL");
 }

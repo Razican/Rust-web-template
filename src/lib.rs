@@ -13,7 +13,7 @@
 #![allow(unused_imports, unused_extern_crates)]
 
 #[macro_use]
-extern crate error_chain;
+extern crate failure;
 extern crate flate2;
 #[macro_use]
 extern crate lazy_static;
@@ -35,7 +35,6 @@ extern crate r2d2_redis;
 extern crate redis;
 extern crate uuid;
 
-mod error;
 mod db;
 mod compress;
 pub mod api;

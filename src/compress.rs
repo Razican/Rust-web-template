@@ -3,6 +3,7 @@
 use std::path::Path;
 use std::io::{self, Cursor, Write};
 
+use failure::Error;
 use rocket::{Request, Response};
 use rocket::response::{NamedFile, Responder};
 use rocket::http::{ContentType, Status};
@@ -10,8 +11,6 @@ use rocket_contrib::Template;
 use flate2::write::GzEncoder;
 use flate2::Compression;
 use serde::Serialize;
-
-use error::Error;
 
 /// Compressed template.
 #[derive(Debug)]
@@ -129,7 +128,7 @@ where
 /// Compresses the given response using Gzip.
 ///
 /// Note that you should check if the client accepts compressed responses before compressing it.
-fn compress_response(response: &mut Response) -> Result<(), io::Error> {
+fn compress_response(response: &mut Response) -> Result<(), Error> {
     let mut encoder = GzEncoder::new(Vec::new(), Compression::default());
     encoder.write_all(&response.body_bytes().unwrap_or_default())?;
 
