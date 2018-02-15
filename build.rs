@@ -4,7 +4,7 @@
 extern crate error_chain;
 
 use std::process::Command;
-use std::fs::{read_dir, create_dir_all, rename};
+use std::fs::{create_dir_all, read_dir, rename};
 use std::path::{Path, PathBuf};
 
 use error::*;
@@ -23,10 +23,9 @@ fn minify_css<P: AsRef<Path>>(folder_path: P) -> Result<()> {
         let file = file?;
         let path = file.path();
         let file_type = file.file_type()?;
-        if file_type.is_file() &&
-            path.extension().map(|e| e.to_string_lossy().into_owned()) == Some("scss".to_owned())
+        if file_type.is_file()
+            && path.extension().map(|e| e.to_string_lossy().into_owned()) == Some("scss".to_owned())
         {
-
             let mut new_file =
                 PathBuf::from("static/css/_compiled").join(path.strip_prefix("static/css")?);
             new_file.set_extension("css");
@@ -76,8 +75,8 @@ fn minify_css<P: AsRef<Path>>(folder_path: P) -> Result<()> {
                     rename(map_file, new_file)?;
                 }
             }
-        } else if file_type.is_dir() &&
-                   !path.file_name().unwrap().to_str().unwrap().starts_with('_')
+        } else if file_type.is_dir()
+            && !path.file_name().unwrap().to_str().unwrap().starts_with('_')
         {
             minify_css(path)?;
         }
@@ -91,10 +90,9 @@ fn minify_js<P: AsRef<Path>>(folder_path: P) -> Result<()> {
         let file = file?;
         let path = file.path();
         let file_type = file.file_type()?;
-        if file_type.is_file() &&
-            path.extension().map(|e| e.to_string_lossy().into_owned()) == Some("js".to_owned())
+        if file_type.is_file()
+            && path.extension().map(|e| e.to_string_lossy().into_owned()) == Some("js".to_owned())
         {
-
             let relative_path = path.strip_prefix("static/js")?;
             let mut new_file = PathBuf::from("static/js/_compiled").join(&relative_path);
             new_file.set_extension("min.js");
@@ -139,9 +137,9 @@ fn minify_js<P: AsRef<Path>>(folder_path: P) -> Result<()> {
                     new_file.display()
                 );
             }
-        } else if file_type.is_dir() &&
-                   !path.file_name().unwrap().to_str().unwrap().starts_with('_') &&
-                   path.file_name().unwrap().to_str().unwrap() != "compiled"
+        } else if file_type.is_dir()
+            && !path.file_name().unwrap().to_str().unwrap().starts_with('_')
+            && path.file_name().unwrap().to_str().unwrap() != "compiled"
         {
             minify_js(path)?;
         }

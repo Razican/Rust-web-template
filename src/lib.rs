@@ -1,10 +1,8 @@
 //! Web core.
 
 #![recursion_limit = "128"]
-
 #![feature(plugin)]
 #![plugin(rocket_codegen)]
-
 #![cfg_attr(feature = "cargo-clippy", deny(clippy))]
 #![forbid(anonymous_parameters)]
 //#![cfg_attr(feature = "cargo-clippy", warn(clippy_pedantic))]
@@ -12,30 +10,29 @@
         unsafe_code, trivial_numeric_casts, trivial_casts, missing_docs,
         missing_debug_implementations, missing_copy_implementations, box_pointers,
         unused_extern_crates)]
-
 #![allow(unused_imports, unused_extern_crates)]
 
 #[macro_use]
-extern crate lazy_static;
-#[macro_use]
 extern crate error_chain;
+extern crate flate2;
+#[macro_use]
+extern crate lazy_static;
 extern crate rocket;
 extern crate rocket_contrib;
-extern crate flate2;
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
 
 // For databases:
-extern crate r2d2;
+extern crate chrono;
 #[macro_use]
 extern crate diesel;
 #[macro_use]
 extern crate diesel_infer_schema;
+extern crate r2d2;
 extern crate r2d2_diesel;
-extern crate redis;
 extern crate r2d2_redis;
-extern crate chrono;
+extern crate redis;
 extern crate uuid;
 
 mod error;

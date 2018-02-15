@@ -1,6 +1,5 @@
 //! OAuth related database methods.
 
-
 use error::*;
 use super::models::oauth::Application;
 use super::Connection;

@@ -17,21 +17,21 @@ source_maps = []
 [dependencies]
 lazy_static = "1.0.0"
 error-chain = "0.11.0"
-rocket = "0.3.3"
-rocket_codegen = "0.3.3"
+rocket = "0.3.6"
+rocket_codegen = "0.3.6"
 dotenv = "0.10.1"
-serde = "1.0.23"
-serde_derive = "1.0.23"
+serde = "1.0.27"
+serde_derive = "1.0.27"
 serde_json = "1.0.7"
 redis = "0.8.0"
 r2d2 = "0.8.1"
 r2d2_redis = "0.7.0"
-r2d2-diesel = "1.0.0-beta1"
+r2d2-diesel = "1.0.0"
 chrono = "0.4.0"
 uuid = "0.5.1"
 
 [dependencies.rocket_contrib]
-version = "0.3.3"
+version = "0.3.6"
 default-features = false
 features = ["handlebars_templates", "json"]
 
@@ -41,12 +41,12 @@ features = ["rust_backend"]
 default-features = false
 
 [dependencies.diesel]
-version = "1.0.0-beta1"
+version = "1.0.0"
 default-features = false
 features = ["postgres", "uuid", "chrono"]
 
 [dependencies.diesel_infer_schema]
-version = "1.0.0-beta1"
+version = "1.0.0"
 default-features = false
 features = ["postgres"]
 
@@ -55,19 +55,21 @@ error-chain = "0.11.0"
 
 # The development profile, used for `cargo build`.
 [profile.dev]
-opt-level = 0
+incremental = true
+opt-level = 1
 debug = true
 rpath = false
 lto = false
 debug-assertions = true
-codegen-units = 4
 panic = 'unwind'
 
 # The release profile, used for `cargo build --release`.
 [profile.release]
+incremental = false
 opt-level = 3
 debug = false
 rpath = false
+codegen-units = 1
 lto = true
 debug-assertions = false
 panic = 'unwind'

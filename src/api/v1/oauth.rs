@@ -1,9 +1,9 @@
 //! OAuth module.
 
-use chrono::{NaiveDateTime, DateTime, Utc, Duration};
+use chrono::{DateTime, Duration, NaiveDateTime, Utc};
 use rocket_contrib::Json;
 use rocket::Outcome;
-use rocket::request::{self, Request, FromRequest};
+use rocket::request::{self, FromRequest, Request};
 use rocket::http::Status;
 use uuid::Uuid;
 
@@ -15,13 +15,14 @@ use db::{self, CONNECTION_POOL};
 #[derive(Debug, Serialize)]
 pub struct RefreshResponse {
     refresh_token: RefreshToken,
-    access_token: AccessToken,
+    access_token: AccessTokenResponse,
 }
 
 /// Refresh token information structure.
 #[derive(Debug, Serialize)]
 pub struct RefreshToken {
-    token: String,
+    #[serde(serialize_with = "hex_str")]
+    token: [u8; 16],
     expiration: i64,
 }
 
@@ -45,22 +46,22 @@ impl<'a, 'r> FromRequest<'a, 'r> for Application {
     type Error = &'static str;
 
     fn from_request(request: &'a Request<'r>) -> request::Outcome<Self, Self::Error> {
-        if let (Some(Ok(app_id)), Some(Ok(timestamp)), Some(signature)) =
-            (
-                request.headers().get("X-App-Id").next().map(|str_id| {
-                    str_id.parse::<u64>()
-                }),
-                request.headers().get("X-Timestamp").next().map(
-                    |str_time| {
-                        str_time.parse::<i64>()
-                    },
-                ),
-                request.headers().get("X-Signature").next(),
-            )
-        {
+        if let (Some(Ok(app_id)), Some(Ok(timestamp)), Some(signature)) = (
+            request
+                .headers()
+                .get("X-App-Id")
+                .next()
+                .map(|str_id| str_id.parse::<u64>()),
+            request
+                .headers()
+                .get("X-Timestamp")
+                .next()
+                .map(|str_time| str_time.parse::<i64>()),
+            request.headers().get("X-Signature").next(),
+        ) {
             let date_time = DateTime::from_utc(NaiveDateTime::from_timestamp(timestamp, 0), Utc);
-            if date_time > Utc::now() - Duration::minutes(5) &&
-                date_time <= Utc::now() + Duration::seconds(10)
+            if date_time > Utc::now() - Duration::minutes(5)
+                && date_time <= Utc::now() + Duration::seconds(10)
             {
                 if let Ok(db_con) = CONNECTION_POOL.get() {
                     // Valid date time, check request.
@@ -75,9 +76,10 @@ impl<'a, 'r> FromRequest<'a, 'r> for Application {
 
                                     if let Err(_) = db::cache::oauth::add_request(app.id()) {
                                         // TODO log error.
-                                        Outcome::Failure(
-                                            (Status::InternalServerError, "Unknown error"),
-                                        )
+                                        Outcome::Failure((
+                                            Status::InternalServerError,
+                                            "Unknown error",
+                                        ))
                                     } else {
                                         Outcome::Success(Application {
                                             id: app.id(),
@@ -86,9 +88,10 @@ impl<'a, 'r> FromRequest<'a, 'r> for Application {
                                     }
                                 } else {
                                     // Failure: too many requests.
-                                    Outcome::Failure(
-                                        (Status::TooManyRequests, "Hourly request limit reached"),
-                                    )
+                                    Outcome::Failure((
+                                        Status::TooManyRequests,
+                                        "Hourly request limit reached",
+                                    ))
                                 }
                             } else {
                                 // TODO log error.
@@ -134,7 +137,7 @@ pub fn refresh_token(
 /// Access token information structure.
 #[derive(Debug, Serialize)]
 pub struct AccessToken {
-    token: String,
+    scope: Vec<Scope>,
     expiration: i64,
 }
 
