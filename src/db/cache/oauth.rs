@@ -1,11 +1,10 @@
 //! OAuth cache module.
 
 use uuid::Uuid;
-
-use error::*;
+use failure::Error;
 
 /// Gets the hourly request count for the given application ID.
-pub fn get_request_count(app_id: Uuid) -> Result<i32> {
+pub fn get_request_count(app_id: Uuid) -> Result<i32, Error> {
     unimplemented!()
 }
 
@@ -13,6 +12,6 @@ pub fn get_request_count(app_id: Uuid) -> Result<i32> {
 ///
 /// If the application ID does not exist, it will create a new record with 1 request and with a
 /// lifetime of 1 hour.
-pub fn add_request(app_id: Uuid) -> Result<()> {
+pub fn add_request(app_id: Uuid) -> Result<(), Error> {
     unimplemented!()
 }

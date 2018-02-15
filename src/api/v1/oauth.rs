@@ -1,13 +1,13 @@
 //! OAuth module.
 
-use chrono::{NaiveDateTime, DateTime, Utc, Duration};
+use failure::Error;
+use chrono::{DateTime, Duration, NaiveDateTime, Utc};
 use rocket_contrib::Json;
 use rocket::Outcome;
-use rocket::request::{self, Request, FromRequest};
+use rocket::request::{self, FromRequest, Request};
 use rocket::http::Status;
 use uuid::Uuid;
 
-use error::*;
 use compress::CompressedJson;
 use db::{self, CONNECTION_POOL};
 
@@ -45,22 +45,22 @@ impl<'a, 'r> FromRequest<'a, 'r> for Application {
     type Error = &'static str;
 
     fn from_request(request: &'a Request<'r>) -> request::Outcome<Self, Self::Error> {
-        if let (Some(Ok(app_id)), Some(Ok(timestamp)), Some(signature)) =
-            (
-                request.headers().get("X-App-Id").next().map(|str_id| {
-                    str_id.parse::<u64>()
-                }),
-                request.headers().get("X-Timestamp").next().map(
-                    |str_time| {
-                        str_time.parse::<i64>()
-                    },
-                ),
-                request.headers().get("X-Signature").next(),
-            )
-        {
+        if let (Some(Ok(app_id)), Some(Ok(timestamp)), Some(signature)) = (
+            request
+                .headers()
+                .get("X-App-Id")
+                .next()
+                .map(|str_id| str_id.parse::<u64>()),
+            request
+                .headers()
+                .get("X-Timestamp")
+                .next()
+                .map(|str_time| str_time.parse::<i64>()),
+            request.headers().get("X-Signature").next(),
+        ) {
             let date_time = DateTime::from_utc(NaiveDateTime::from_timestamp(timestamp, 0), Utc);
-            if date_time > Utc::now() - Duration::minutes(5) &&
-                date_time <= Utc::now() + Duration::seconds(10)
+            if date_time > Utc::now() - Duration::minutes(5)
+                && date_time <= Utc::now() + Duration::seconds(10)
             {
                 if let Ok(db_con) = CONNECTION_POOL.get() {
                     // Valid date time, check request.
@@ -75,9 +75,10 @@ impl<'a, 'r> FromRequest<'a, 'r> for Application {
 
                                     if let Err(_) = db::cache::oauth::add_request(app.id()) {
                                         // TODO log error.
-                                        Outcome::Failure(
-                                            (Status::InternalServerError, "Unknown error"),
-                                        )
+                                        Outcome::Failure((
+                                            Status::InternalServerError,
+                                            "Unknown error",
+                                        ))
                                     } else {
                                         Outcome::Success(Application {
                                             id: app.id(),
@@ -86,9 +87,10 @@ impl<'a, 'r> FromRequest<'a, 'r> for Application {
                                     }
                                 } else {
                                     // Failure: too many requests.
-                                    Outcome::Failure(
-                                        (Status::TooManyRequests, "Hourly request limit reached"),
-                                    )
+                                    Outcome::Failure((
+                                        Status::TooManyRequests,
+                                        "Hourly request limit reached",
+                                    ))
                                 }
                             } else {
                                 // TODO log error.
@@ -127,7 +129,7 @@ impl<'a, 'r> FromRequest<'a, 'r> for Application {
 pub fn refresh_token(
     application: Application,
     credentials: Json<RefreshCredentials>,
-) -> Result<CompressedJson<RefreshResponse>> {
+) -> Result<CompressedJson<RefreshResponse>, Error> {
     unimplemented!()
 }
 
@@ -140,6 +142,6 @@ pub struct AccessToken {
 
 /// Get access token.
 #[get("/access_token")]
-pub fn access_token() -> Result<CompressedJson<AccessToken>> {
+pub fn access_token() -> Result<CompressedJson<AccessToken>, Error> {
     unimplemented!()
 }

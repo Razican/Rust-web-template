@@ -3,15 +3,14 @@
 use std::path::Path;
 use std::io::{self, Cursor, Write};
 
+use failure::Error;
 use rocket::{Request, Response};
-use rocket::response::{Responder, NamedFile};
+use rocket::response::{NamedFile, Responder};
 use rocket::http::{ContentType, Status};
 use rocket_contrib::Template;
 use flate2::write::GzEncoder;
 use flate2::Compression;
 use serde::Serialize;
-
-use error::Error;
 
 /// Compressed template.
 #[derive(Debug)]
@@ -33,8 +32,8 @@ impl<'r> Responder<'r> for CompressedTemplate {
 
         let headers = request.headers();
         // Check if requests accepts gzip encoding.
-        if headers.contains("Accept") &&
-            headers.get("Accept-Encoding").any(
+        if headers.contains("Accept")
+            && headers.get("Accept-Encoding").any(
                 |e| e.to_lowercase() == "gzip",
                 // We compress the response here.
             ) && compress_response(&mut response).is_err()
@@ -75,8 +74,8 @@ impl<'r> Responder<'r> for CompressedFile {
 
         let headers = request.headers();
         // Check if requests accepts gzip encoding.
-        if headers.contains("Accept") &&
-            headers.get("Accept-Encoding").any(
+        if headers.contains("Accept")
+            && headers.get("Accept-Encoding").any(
                 |e| e.to_lowercase() == "gzip",
                 // We compress the response here.
             ) && compress_response(&mut response).is_err()
@@ -113,8 +112,8 @@ where
 
         let headers = request.headers();
         // Check if requests accepts gzip encoding.
-        if headers.contains("Accept") &&
-            headers.get("Accept-Encoding").any(
+        if headers.contains("Accept")
+            && headers.get("Accept-Encoding").any(
                 |e| e.to_lowercase() == "gzip",
                 // We compress the response here.
             ) && compress_response(&mut response).is_err()
@@ -129,11 +128,9 @@ where
 /// Compresses the given response using Gzip.
 ///
 /// Note that you should check if the client accepts compressed responses before compressing it.
-fn compress_response(response: &mut Response) -> Result<(), io::Error> {
+fn compress_response(response: &mut Response) -> Result<(), Error> {
     let mut encoder = GzEncoder::new(Vec::new(), Compression::default());
-    encoder.write_all(
-        &response.body_bytes().unwrap_or_default(),
-    )?;
+    encoder.write_all(&response.body_bytes().unwrap_or_default())?;
 
     let _ = response.set_raw_header("Content-Encoding", "gzip");
     response.set_sized_body(Cursor::new(encoder.finish()?));
